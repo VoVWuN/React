@@ -13,7 +13,7 @@ export const conversationsReducer = (state = initialState, action) => {
       };
     case DELETE_CONVERSATION:
       return {
-        ...state, state.conversations.filter(conversation => {
+        ...state.conversations.filter(conversation => {
         
         })
       };
