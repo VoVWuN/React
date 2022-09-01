@@ -1,11 +1,9 @@
-import styles from "./layout.module.css";
 import styled from "@emotion/styled";
-import { theme } from "../../index";
 
 const LayoutClass = styled.div`
   background: gray;
   width: 100%;
-  height: calc(100% - 37px);
+  height: calc(100% - 59px);
   display: flex;
   flex-direction: column;
   color: #ffffff;
@@ -15,6 +13,7 @@ const Content = styled.div`
   width: 100%;
   flex-grow: 1;
   overflow: hidden;
+  background-color: ${({ theme }) => theme.palette.primary.dark};
 `;
 
 const MessagesClass = styled.div`
@@ -22,7 +21,6 @@ const MessagesClass = styled.div`
   display: flex;
   flex-direction: column;
   width: 80%;
-  background-color: ${(props) => theme.palette.secondary.main};
   & div:nth-of-type(1) {
     flex-grow: 1;
     overflow-y: auto;
@@ -39,7 +37,7 @@ const MessagesClass = styled.div`
 const ChatsClass = styled.div`
   overflow-y: auto;
   width: 20%;
-  background-color: ${(props) => theme.palette.primary.main};
+  background-color: ${({ theme }) => theme.palette.primary.main};
   border-right: 1px solid #000;
 `;
 

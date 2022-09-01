@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Message } from "./message";
 import { Input, SendIcon } from "../styles";
 import { InputAdornment } from "@mui/material";
@@ -36,28 +36,44 @@ export const MessageList = () => {
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const ref = useRef();
+
   const { chatId } = useParams();
 
-  console.log(messageList);
+  const messages = messageList[chatId] ?? [];
 
-  const sendMessage = (message, author = "User") => {
-    if (message) {
-      setMessageList((state) => ({
-        ...state,
-        [chatId]: [
-          ...(state[chatId] ?? []),
-          { author, message, date: new Date() },
-        ],
-      }));
-      inputRef.current.children[0].focus();
-      setValue("");
-    }
-  };
+  const sendMessage = useCallback(
+    (message, author = "User") => {
+      if (message) {
+        /*  setMessageList({
+            ...messageList,
+            [chatId]: [
+              ...messageList[chatId],
+              { author, message, date: new Date() },
+            ],
+          });*/
+
+        setMessageList((state) => ({
+          ...state,
+          [chatId]: [
+            ...(state[chatId] ?? []),
+            { author, message, date: new Date() },
+          ],
+        }));
+        inputRef.current.children[0].focus();
+        setValue("");
+      }
+    },
+    [chatId]
+  );
 
   const handlePressInput = ({ code }) => {
     if (code === "Enter") {
       sendMessage(value);
     }
+  };
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
   };
 
   useEffect(() => {
@@ -85,15 +101,12 @@ export const MessageList = () => {
       timerId = setTimeout(() => {
         sendMessage("Hello from Bot", "Bot");
       }, 500);
-      console.log(messageList);
 
       return () => {
         clearInterval(timerId);
       };
     }
   }, [chatId, messageList, sendMessage]);
-
-  const messages = messageList[chatId] ?? [];
 
   return (
     <>
@@ -108,8 +121,8 @@ export const MessageList = () => {
         ref={inputRef}
         placeholder="Введите сообщение..."
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyPress={handlePressInput}
+        onChange={handleChange}
+        onKeyDown={handlePressInput}
         endAdornment={
           <InputAdornment position="end">
             {value && <SendIcon onClick={sendMessage} />}

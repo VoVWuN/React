@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Message } from "./message";
+import { Message } from "./message-list";
 import { logDOM } from "@testing-library/react";
 
 export function MessageList() {
