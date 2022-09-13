@@ -5,6 +5,7 @@ import { Chat } from "./chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  conversationsSelector,
   createConversation,
   deleteConversation,
 } from "../../store/conversations";
@@ -14,17 +15,16 @@ import {
 } from "../../store/conversations/conversationsSliceReducer";
 import { Button, Input, TextField } from "@mui/material";
 import { ThemeContext } from "../../theme-context";
-import { defaults } from "autoprefixer";
 
 export const ChatList = () => {
-  const { conversations } = useSelector((state) => state.conversations);
+  const { conversations } = useSelector(conversationsSelector);
   const { chatId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [chatName, setChatName] = useState("");
   const { theme, themeMui } = useContext(ThemeContext);
 
-  console.log("conversations: ", conversations);
+  // console.log("conversations: ", conversations);
 
   const deleteConversationByName = useCallback(
     (name, event) => {
@@ -42,7 +42,6 @@ export const ChatList = () => {
   };
 
   const createConversationByName = () => {
-    console.log(chatName);
     const isValidName = !conversations.includes(chatName);
 
     // switch (chatName) {
@@ -62,16 +61,6 @@ export const ChatList = () => {
     }
   };
 
-  const createConversationByNamePrompt = () => {
-    const name = prompt("Введите имя: ");
-
-    if (name) {
-      dispatch(createConversation(name));
-    } else {
-      alert("Напишите название");
-    }
-  };
-
   return (
     <>
       <div>
@@ -84,7 +73,6 @@ export const ChatList = () => {
         />
         <Button
           onClick={createConversationByName}
-          // onClick={createConversationByNamePrompt}
           variant={"contained"}
           size={"small"}
           sx={{

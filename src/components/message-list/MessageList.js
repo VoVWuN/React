@@ -1,74 +1,53 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Message } from "./message";
 import { Input, SendIcon } from "../styles";
 import { InputAdornment } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { messagesSelector, sendMessageWithBot } from "../../store/messages";
+import {
+  createMessage,
+  sendSliceMessage,
+} from "../../store/messages/messagesSliceReducer";
 
 export const MessageList = () => {
-  const [messageList, setMessageList] = useState({
-    chat1: [
-      {
-        author: "User",
-        message: "Первое сообщение в первом чате",
-        date: new Date(),
-      },
-      {
-        author: "Bot",
-        message: "Ответ на первое сообщение в первом чате",
-        date: new Date(),
-      },
-    ],
-    chat2: [
-      {
-        author: "User",
-        message: "Первое сообщение во втором чате",
-        date: new Date(),
-      },
-    ],
-    chat3: [
-      {
-        author: "User",
-        message: "Первое сообщение в третьем чате",
-        date: new Date(),
-      },
-    ],
-  });
+  const { chatId } = useParams();
+  const getMessages = useMemo(() => messagesSelector(chatId), [chatId]);
+  const messages = useSelector(getMessages);
+
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const ref = useRef();
+  const dispatch = useDispatch();
 
-  const { chatId } = useParams();
-
-  const messages = messageList[chatId] ?? [];
-
-  const sendMessage = useCallback(
+  const send = useCallback(
     (message, author = "User") => {
       if (message) {
-        /*  setMessageList({
-            ...messageList,
-            [chatId]: [
-              ...messageList[chatId],
-              { author, message, date: new Date() },
-            ],
-          });*/
-
-        setMessageList((state) => ({
-          ...state,
-          [chatId]: [
-            ...(state[chatId] ?? []),
-            { author, message, date: new Date() },
-          ],
-        }));
+        // dispatch(
+        //   createMessage({
+        //     chatId,
+        //     message,
+        //     author,
+        //   })
+        // );
+        // dispatch(sendMessageWithBot(chatId, { message, author }));
+        dispatch(sendMessageWithBot(chatId, message, author));
+        // sendSliceMessage(chatId, message, author);
         inputRef.current.children[0].focus();
         setValue("");
       }
     },
-    [chatId]
+    [chatId, dispatch]
   );
-
   const handlePressInput = ({ code }) => {
     if (code === "Enter") {
-      sendMessage(value);
+      send(value);
     }
   };
 
@@ -90,29 +69,26 @@ export const MessageList = () => {
         behavior: "smooth",
       });
     }
-  });
+  }, [messages]);
 
-  useEffect(() => {
-    const messages = messageList[chatId] ?? [];
+  /*useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     let timerId = null;
-
     if (messages.length && lastMessage.author === "User") {
       timerId = setTimeout(() => {
-        sendMessage("Hello from Bot", "Bot");
+        send("Hello from Bot", "Bot");
       }, 500);
-
       return () => {
         clearInterval(timerId);
       };
     }
-  }, [chatId, messageList, sendMessage]);
+  }, [messages, send]);*/
 
   return (
     <>
       <div ref={ref}>
         {messages.map((message, index) => (
-          <Message message={message} key={index} />
+          <Message message={message} key={index} chatId={chatId} />
         ))}
       </div>
 
@@ -125,7 +101,7 @@ export const MessageList = () => {
         onKeyDown={handlePressInput}
         endAdornment={
           <InputAdornment position="end">
-            {value && <SendIcon onClick={sendMessage} />}
+            {value && <SendIcon onClick={() => send(value)} />}
           </InputAdornment>
         }
       />

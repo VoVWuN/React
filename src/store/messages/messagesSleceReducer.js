@@ -1,10 +1,5 @@
 import { nanoid } from "nanoid";
 import { createSlice, current } from "@reduxjs/toolkit";
-import { getDefaultMiddleware } from "@reduxjs/toolkit";
-
-const customizedMiddleware = getDefaultMiddleware({
-  serializableCheck: false,
-});
 
 const initialState = {
   messages: {
@@ -58,14 +53,13 @@ const messagesSliceReducer = createSlice({
 export default messagesSliceReducer.reducer;
 export const { createMessage, removeMessage } = messagesSliceReducer.actions;
 
-export function sendSliceMessage(chatId, message, author, timeout = 1000) {
+/*export function sendSliceMessage(chatId, message, author, timeout = 1000) {
   return async (dispatch, getState) => {
     const obj = {
       chatId,
       message,
       author,
     };
-
     setTimeout(() => dispatch(createMessage(obj)), timeout);
   };
-}
+}*/
